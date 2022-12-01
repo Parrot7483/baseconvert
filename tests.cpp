@@ -1,5 +1,6 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <doctest/doctest.h>
+
 #include "BaseConvert.h"
 
 TEST_CASE("testing the baseconvert library") {

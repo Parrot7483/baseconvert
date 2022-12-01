@@ -3,8 +3,8 @@
 #include <string>
 
 // TODO: Second Constructor without origin_alphabet
+// TODO: Optional origin_alpha
 // TOOD: Command line Utility
-// TOOD: Unit tests
 // TODO: std::vector<std::byte> as input/output for encode/decode
 
 namespace baseconvert {
