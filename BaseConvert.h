@@ -2,10 +2,8 @@
 #include <vector>
 #include <string>
 
-// TODO: Second Constructor without origin_alphabet
-// TODO: Optional origin_alpha
-// TOOD: Command line Utility
-// TODO: std::vector<std::byte> as input/output for encode/decode
+
+// TODO: Add option for leading zeros
 
 namespace baseconvert {
 class BaseConvert {
@@ -19,6 +17,11 @@ class BaseConvert {
          * TODO
          */
         BaseConvert(const std::string& _origin_alpha, const std::string& _target_alpha);
+
+        /**
+         * TODO
+         */
+        BaseConvert(const std::string& _target_alpha);
 
         /**
          * TODO
@@ -50,6 +53,17 @@ class NonPrintableCharacterException : public std::exception {
         std::string msg;
     public:
         NonPrintableCharacterException(const char c);
+        const char* what() const noexcept;
+};
+
+/**
+ * TODO
+ */
+class DuplicateCharacterException : public std::exception {
+    private:
+        std::string msg;
+    public:
+        DuplicateCharacterException(const char c);
         const char* what() const noexcept;
 };
 }
