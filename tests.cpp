@@ -3,7 +3,7 @@
 
 #include "BaseConvert.h"
 
-TEST_CASE("testing the baseconvert library") {
+TEST_CASE("Testing the baseconvert library") {
     SUBCASE("Decimal to hex"){
         baseconvert::BaseConvert t = baseconvert::BaseConvert("0123456789", "0123456789ABCDEF");
         std::vector<unsigned char> input {'2','5','5'};

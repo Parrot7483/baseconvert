@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD 20)
 # Set names
 set(EXECUTABLE_NAME base-convert)
 set(LIBRARY_NAME baseconvert)
-set(TEST_NAME main-test)
+set(TEST_NAME tests)
 
 # find Doctest testing package
 find_package(doctest REQUIRED)
