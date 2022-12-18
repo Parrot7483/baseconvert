@@ -30,44 +30,41 @@ class BaseConvert {
         /**
          * TODO
          */
-        std::string encode(const std::vector<unsigned char>& _input);
+        auto encode(const std::vector<unsigned char>& _input) -> std::string;
 
         /**
          * TODO
          */
-        std::vector<unsigned char> decode(const std::string& _input);
+        auto decode(const std::string& _input) -> std::vector<unsigned char>;
 };
 
 /**
  * TODO
  */
 class UnknownCharacterException : public std::exception {
-    private:
-        std::string msg;
+        char c;
     public:
         UnknownCharacterException(const char c);
-        const char* what() const noexcept;
+        auto what() const noexcept -> const char*;
 };
 
 /**
  * TODO
  */
 class NonPrintableCharacterException : public std::exception {
-    private:
-        std::string msg;
+        char c;
     public:
         NonPrintableCharacterException(const char c);
-        const char* what() const noexcept;
+        auto what() const noexcept -> const char*;
 };
 
 /**
  * TODO
  */
 class DuplicateCharacterException : public std::exception {
-    private:
-        std::string msg;
+        char c;
     public:
         DuplicateCharacterException(const char c);
-        const char* what() const noexcept;
+        auto what() const noexcept -> const char*;
 };
 }

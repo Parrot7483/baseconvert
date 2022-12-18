@@ -95,26 +95,20 @@ namespace baseconvert {
     }
 
     // TODO: Replace with C++20 std::format when available in gcc
-    UnknownCharacterException::UnknownCharacterException(const char c) 
-        : msg(fmt::format("Found character \'0x{:02X}\' in input but not input alphabet!", c))
-    {}
-    const char* UnknownCharacterException::what() const noexcept {
-        return this->msg.c_str();
+    UnknownCharacterException::UnknownCharacterException(const char c) : c(c){}
+    auto UnknownCharacterException::what() const noexcept -> const char* {
+        return fmt::format("Found character \'0x{:02X}\' in input but not in input alphabet!", this->c).c_str();
     }
 
     // TODO: Replace with C++20 std::format when available in gcc
-    NonPrintableCharacterException::NonPrintableCharacterException(const char c) 
-        : msg(fmt::format("Character \'0x{:02X}\' found in input alphabet is not printable!", c))
-    {}
-    const char* NonPrintableCharacterException::what() const noexcept {
-        return this->msg.c_str();
+    NonPrintableCharacterException::NonPrintableCharacterException(const char c) : c(c) {}
+    auto NonPrintableCharacterException::what() const noexcept -> const char* {
+        return fmt::format("Character \'0x{:02X}\' found in alphabet is not printable!", this->c).c_str();
     }
 
     // TODO: Replace with C++20 std::format when available in gcc
-    DuplicateCharacterException::DuplicateCharacterException(const char c) 
-        : msg(fmt::format("Character \'0x{:02X}\' found multiple times in input alphabet!", c))
-    {}
-    const char* DuplicateCharacterException::what() const noexcept {
-        return this->msg.c_str();
+    DuplicateCharacterException::DuplicateCharacterException(const char c) : c(c) {}
+    auto DuplicateCharacterException::what() const noexcept -> const char *{
+        return fmt::format("Character \'0x{:02X}\' found multiple times in alphabet!", c).c_str();
     }
 }
