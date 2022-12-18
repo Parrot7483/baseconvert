@@ -28,7 +28,7 @@ TEST_CASE("Testing the baseconvert library") {
         CHECK(input == t.decode(result));
     }
 
-    SUBCASE("ASCII to binary"){
+    SUBCASE("Raw to binary"){
         baseconvert::BaseConvert t = baseconvert::BaseConvert("01");
         std::vector<unsigned char> input {'H','e','l','l','o',',',' ','W','o','r','l','d','!'};
         std::string result = t.encode(input);

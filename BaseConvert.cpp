@@ -1,8 +1,10 @@
 #include <iostream>
 #include <unordered_map>
 #include <vector>
+#include <tuple>
 #include <string>
 #include <algorithm>
+
 #include <ctype.h>
 #include <gmpxx.h>
 #include <fmt/core.h>
@@ -10,53 +12,51 @@
 #include "BaseConvert.h"
 
 namespace baseconvert {
-    unsigned char get_char_from_alphabet(
-        const std::unordered_map<unsigned char, unsigned char>& _alpha, 
-        const char _c
-    ) {
-        if (const auto tmp = _alpha.find(_c); tmp != _alpha.end()) {
-            return tmp->second;
-        } else {
-           throw UnknownCharacterException(_c);
-        }
-    }
+    auto generate_standard_alphabets() -> std::tuple<alphabet, alphabet> {
+        alphabet alpha {};
+        alphabet alpha_reverse {};
 
-    void generate_standard_alphabets(
-        std::unordered_map<unsigned char, unsigned char>& _alpha, 
-        std::unordered_map<unsigned char, unsigned char>& _alpha_reverse
-    ) {
         for (int i = 0; i < 256; i++) {
-            _alpha[i] = i;
-            _alpha_reverse[i] = i;
+            alpha[i] = i;
+            alpha_reverse[i] = i;
         }
+
+        return {alpha, alpha_reverse};
     }
 
-    void generate_alphabets(
-        std::unordered_map<unsigned char, unsigned char>& _alpha, 
-        std::unordered_map<unsigned char, unsigned char>& _alpha_reverse,
-        const std::string& _input
-    ) {
+    auto generate_alphabets(const std::string& _input) -> std::tuple<alphabet, alphabet> {
+        alphabet alpha {};
+        alphabet alpha_reverse {};
+
         for (unsigned char i = 0; const auto c: _input) {
             if (! isprint(c))
                 throw NonPrintableCharacterException(c);
-            else if (_alpha.contains(c))
+            else if (alpha.contains(c))
                 throw DuplicateCharacterException(c);
 
-            _alpha[c] = i;
-            _alpha_reverse[i] = c;
+            alpha[c] = i;
+            alpha_reverse[i] = c;
             i++;
         }
+
+        return {alpha, alpha_reverse};
     }
 
-    std::vector<unsigned char> convert(
-        std::unordered_map<unsigned char, unsigned char>& _input_alpha, 
-        std::unordered_map<unsigned char, unsigned char>& _output_alpha_reverse,
+    // TODO: Use template for input and output data type
+    auto convert(
+        alphabet& _input_alpha, 
+        alphabet& _output_alpha_reverse,
         const std::vector<unsigned char>& _input
-    ) {
+    ) -> std::vector<unsigned char> {
         mpz_class num {0}; 
+        const auto input_alpha_size {_input_alpha.size()}; 
         for (const auto c: _input){
-            num *= _input_alpha.size();
-            num += get_char_from_alphabet(_input_alpha, c);
+            num *= input_alpha_size;
+            try {
+                num += _input_alpha.at(c);
+            } catch(const std::out_of_range&) {
+                throw UnknownCharacterException(c);
+            }
         }
 
         std::vector<unsigned char> result {};
@@ -72,32 +72,31 @@ namespace baseconvert {
 
         std::reverse(result.begin(), result.end());
         return result;
-
     }
 
     BaseConvert::BaseConvert(const std::string& _origin_alpha, const std::string& _target_alpha) {
-        generate_alphabets(this->origin_alpha, this->origin_alpha_reverse, _origin_alpha);
-        generate_alphabets(this->target_alpha, this->target_alpha_reverse, _target_alpha);
+        std::tie(this->origin_alpha, this->origin_alpha_reverse) = generate_alphabets(_origin_alpha);
+        std::tie(this->target_alpha, this->target_alpha_reverse) = generate_alphabets(_target_alpha);
     }
 
     BaseConvert::BaseConvert(const std::string& _target_alpha) {
-        generate_standard_alphabets(this->origin_alpha, this->origin_alpha_reverse);
-        generate_alphabets(this->target_alpha, this->target_alpha_reverse, _target_alpha);
+        std::tie(this->origin_alpha, this->origin_alpha_reverse) = generate_standard_alphabets();
+        std::tie(this->target_alpha, this->target_alpha_reverse) = generate_alphabets(_target_alpha);
     }
 
-    std::string BaseConvert::encode(const std::vector<unsigned char>& _input) {
+    auto BaseConvert::encode(const std::vector<unsigned char>& _input) -> std::string {
         std::vector<unsigned char> result = convert(this->origin_alpha, this->target_alpha_reverse, _input);
         return std::string(result.begin(), result.end());
     }
 
-    std::vector<unsigned char> BaseConvert::decode(const std::string& _input) {
+    auto BaseConvert::decode(const std::string& _input) -> std::vector<unsigned char> {
         std::vector<unsigned char> input(_input.begin(), _input.end());
         return convert(this->target_alpha, this->origin_alpha_reverse, input);
     }
 
     // TODO: Replace with C++20 std::format when available in gcc
     UnknownCharacterException::UnknownCharacterException(const char c) 
-        : msg(fmt::format("Found character \'{}\' in input but not input alphabet!", c))
+        : msg(fmt::format("Found character \'0x{:02X}\' in input but not input alphabet!", c))
     {}
     const char* UnknownCharacterException::what() const noexcept {
         return this->msg.c_str();

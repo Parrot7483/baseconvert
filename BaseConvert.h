@@ -5,13 +5,17 @@
 
 // TODO: Add option for leading zeros
 
+// using input_data = std::variant<std::vector<unsigned char>,std::vector<std::byte>>;
+
 namespace baseconvert {
+
+using alphabet = std::unordered_map<unsigned char, unsigned char>;
+
 class BaseConvert {
-    private:
-        std::unordered_map<unsigned char, unsigned char> origin_alpha;
-        std::unordered_map<unsigned char, unsigned char> origin_alpha_reverse;
-        std::unordered_map<unsigned char, unsigned char> target_alpha;
-        std::unordered_map<unsigned char, unsigned char> target_alpha_reverse;
+        alphabet origin_alpha;
+        alphabet origin_alpha_reverse;
+        alphabet target_alpha;
+        alphabet target_alpha_reverse;
     public: 
         /**
          * TODO
