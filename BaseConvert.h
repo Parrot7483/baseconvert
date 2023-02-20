@@ -3,7 +3,8 @@
 #include <string>
 
 
-// TODO: Add option for leading zeros
+// TODO(Parrot): Add option for leading zeros
+// Add support for constexpr
 
 // using input_data = std::variant<std::vector<unsigned char>,std::vector<std::byte>>;
 
@@ -41,30 +42,27 @@ class BaseConvert {
 /**
  * TODO
  */
-class UnknownCharacterException : public std::exception {
-        char c;
-    public:
-        UnknownCharacterException(const char c);
+struct UnknownCharacterException : public std::exception {
+        const char c;
+        UnknownCharacterException(const char _c) : c{_c} {};
         auto what() const noexcept -> const char*;
 };
 
 /**
  * TODO
  */
-class NonPrintableCharacterException : public std::exception {
-        char c;
-    public:
-        NonPrintableCharacterException(const char c);
+struct NonPrintableCharacterException : public std::exception {
+        const char c;
+        NonPrintableCharacterException(const char _c) : c{_c} {};
         auto what() const noexcept -> const char*;
 };
 
 /**
  * TODO
  */
-class DuplicateCharacterException : public std::exception {
-        char c;
-    public:
-        DuplicateCharacterException(const char c);
+struct DuplicateCharacterException : public std::exception {
+        const char c;
+        DuplicateCharacterException(const char _c) : c{_c} {};
         auto what() const noexcept -> const char*;
 };
 }

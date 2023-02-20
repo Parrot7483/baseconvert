@@ -1,15 +1,16 @@
+#include "BaseConvert.h"
+
+#include <gmpxx.h>
+#include <fmt/core.h>
+
+#include <algorithm>
 #include <iostream>
 #include <unordered_map>
 #include <vector>
 #include <tuple>
 #include <string>
-#include <algorithm>
 
-#include <ctype.h>
-#include <gmpxx.h>
-#include <fmt/core.h>
-
-#include "BaseConvert.h"
+// TODO(Parrot): Return this-> (not recommendet in general)
 
 namespace baseconvert {
     auto generate_standard_alphabets() -> std::tuple<alphabet, alphabet> {
@@ -29,10 +30,13 @@ namespace baseconvert {
         alphabet alpha_reverse {};
 
         for (unsigned char i = 0; const auto c: _input) {
-            if (! isprint(c))
+            if (0 != isprint(c)) {
                 throw NonPrintableCharacterException(c);
-            else if (alpha.contains(c))
+	    } 
+
+	    if (alpha.contains(c)) {
                 throw DuplicateCharacterException(c);
+	    }
 
             alpha[c] = i;
             alpha_reverse[i] = c;
@@ -42,7 +46,8 @@ namespace baseconvert {
         return {alpha, alpha_reverse};
     }
 
-    // TODO: Use template for input and output data type
+    // TODO(Parrot): Use template for input and output data type
+    // TODO(Parrot): Make use of string_view
     auto convert(
         alphabet& _input_alpha, 
         alphabet& _output_alpha_reverse,
@@ -52,6 +57,7 @@ namespace baseconvert {
         const auto input_alpha_size {_input_alpha.size()}; 
         for (const auto c: _input){
             num *= input_alpha_size;
+	    // TODO(Parrot): Create own alphabet container that throws at std::out_of_range
             try {
                 num += _input_alpha.at(c);
             } catch(const std::out_of_range&) {
@@ -59,9 +65,11 @@ namespace baseconvert {
             }
         }
 
+	// TOOD: Size of output is known. Create Buffer. Fill from end to front. No reverse needed!
         std::vector<unsigned char> result {};
         const mpz_class output_alpha_size {_output_alpha_reverse.size()};
         while (num) {
+	    // TODO(Parrot): Create wrapper around mpz_tdiv_qr that returns remainder.get_ui() and only takes num once. Uses int as input and output.
             mpz_class remainder;
             mpz_tdiv_qr(num.get_mpz_t(), 
                         remainder.get_mpz_t(), 
@@ -94,21 +102,18 @@ namespace baseconvert {
         return convert(this->target_alpha, this->origin_alpha_reverse, input);
     }
 
-    // TODO: Replace with C++20 std::format when available in gcc
-    UnknownCharacterException::UnknownCharacterException(const char c) : c(c){}
+    // TODO(Parrot): Replace with C++20 std::format when available in gcc
     auto UnknownCharacterException::what() const noexcept -> const char* {
         return fmt::format("Found character \'0x{:02X}\' in input but not in input alphabet!", this->c).c_str();
     }
 
-    // TODO: Replace with C++20 std::format when available in gcc
-    NonPrintableCharacterException::NonPrintableCharacterException(const char c) : c(c) {}
+    // TODO(Parrot): Replace with C++20 std::format when available in gcc
     auto NonPrintableCharacterException::what() const noexcept -> const char* {
         return fmt::format("Character \'0x{:02X}\' found in alphabet is not printable!", this->c).c_str();
     }
 
-    // TODO: Replace with C++20 std::format when available in gcc
-    DuplicateCharacterException::DuplicateCharacterException(const char c) : c(c) {}
+    // TODO(Parrot): Replace with C++20 std::format when available in gcc
     auto DuplicateCharacterException::what() const noexcept -> const char *{
         return fmt::format("Character \'0x{:02X}\' found multiple times in alphabet!", c).c_str();
     }
-}
+} // namespace baseconvert
