@@ -1,14 +1,14 @@
 #include "BaseConvert.h"
 
-#include <gmpxx.h>
 #include <fmt/core.h>
+#include <gmpxx.h>
 
 #include <algorithm>
 #include <iostream>
+#include <string>
+#include <tuple>
 #include <unordered_map>
 #include <vector>
-#include <tuple>
-#include <string>
 
 // TODO(Parrot): Return this-> (not recommendet in general)
 
@@ -30,7 +30,7 @@ namespace baseconvert {
         alphabet alpha_reverse {};
 
         for (unsigned char i = 0; const auto c: _input) {
-            if (0 != isprint(c)) {
+            if (0 == isprint(c)) {
                 throw NonPrintableCharacterException(c);
 	    } 
 
@@ -61,7 +61,7 @@ namespace baseconvert {
             try {
                 num += _input_alpha.at(c);
             } catch(const std::out_of_range&) {
-                throw UnknownCharacterException(c);
+                throw UnknownCharacterException(static_cast<char>(c));
             }
         }
 
@@ -94,26 +94,35 @@ namespace baseconvert {
 
     auto BaseConvert::encode(const std::vector<unsigned char>& _input) -> std::string {
         std::vector<unsigned char> result = convert(this->origin_alpha, this->target_alpha_reverse, _input);
-        return std::string(result.begin(), result.end());
+        return {result.begin(), result.end()};
     }
 
     auto BaseConvert::decode(const std::string& _input) -> std::vector<unsigned char> {
-        std::vector<unsigned char> input(_input.begin(), _input.end());
+        std::vector<unsigned char> input{_input.begin(), _input.end()};
         return convert(this->target_alpha, this->origin_alpha_reverse, input);
     }
 
     // TODO(Parrot): Replace with C++20 std::format when available in gcc
-    auto UnknownCharacterException::what() const noexcept -> const char* {
-        return fmt::format("Found character \'0x{:02X}\' in input but not in input alphabet!", this->c).c_str();
+    UnknownCharacterException::UnknownCharacterException(const char character) : msg{
+	fmt::format("Found character \'0x{:02X}\' in input but not in input alphabet!", character)
+    } {};
+    const char* UnknownCharacterException::what() const noexcept { //NOLINT
+        return msg.c_str();
     }
 
     // TODO(Parrot): Replace with C++20 std::format when available in gcc
-    auto NonPrintableCharacterException::what() const noexcept -> const char* {
-        return fmt::format("Character \'0x{:02X}\' found in alphabet is not printable!", this->c).c_str();
+    NonPrintableCharacterException::NonPrintableCharacterException(const char character) : msg{
+	fmt::format("Character \'0x{:02X}\' found in alphabet is not printable!", character)
+    } {};
+    const char* NonPrintableCharacterException::what() const noexcept { // NOLINT
+	return msg.c_str();
     }
 
     // TODO(Parrot): Replace with C++20 std::format when available in gcc
-    auto DuplicateCharacterException::what() const noexcept -> const char *{
-        return fmt::format("Character \'0x{:02X}\' found multiple times in alphabet!", c).c_str();
+    DuplicateCharacterException::DuplicateCharacterException(const char character) : msg{
+	fmt::format("Character \'0x{:02X}\' found multiple times in alphabet!", character)
+    } {};
+    const char* DuplicateCharacterException::what() const noexcept { // NOLINT
+	return msg.c_str();
     }
 } // namespace baseconvert

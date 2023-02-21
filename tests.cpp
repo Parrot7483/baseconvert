@@ -1,6 +1,7 @@
+// NOLINTBEGIN
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include <doctest/doctest.h>
 
+#include <doctest/doctest.h>
 #include "BaseConvert.h"
 
 TEST_CASE("Testing the baseconvert library") {
@@ -52,3 +53,4 @@ TEST_CASE("Exceptions") {
         CHECK_THROWS(t.encode(input), baseconvert::UnknownCharacterException('A'));
     }
 }
+//NOLINTEND

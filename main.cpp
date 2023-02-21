@@ -4,6 +4,6 @@
 
 #include "BaseConvert.h"
 
-int main(int argc, char *argv[]){
+auto main() -> int{
     return 0;
 }

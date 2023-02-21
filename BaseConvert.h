@@ -3,7 +3,7 @@
 #include <string>
 
 
-// TODO(Parrot): Add option for leading zeros
+// TODO(parrot)(Parrot): Add option for leading zeros
 // Add support for constexpr
 
 // using input_data = std::variant<std::vector<unsigned char>,std::vector<std::byte>>;
@@ -19,50 +19,53 @@ class BaseConvert {
         alphabet target_alpha_reverse;
     public: 
         /**
-         * TODO
+         * TODO(parrot)
          */
-        BaseConvert(const std::string& _origin_alpha, const std::string& _target_alpha);
+        explicit BaseConvert(const std::string& _origin_alpha, const std::string& _target_alpha);
 
         /**
-         * TODO
+         * TODO(parrot)
          */
-        BaseConvert(const std::string& _target_alpha);
+        explicit BaseConvert(const std::string& _target_alpha);
 
         /**
-         * TODO
+         * TODO(parrot)
          */
         auto encode(const std::vector<unsigned char>& _input) -> std::string;
 
         /**
-         * TODO
+         * TODO(parrot)
          */
         auto decode(const std::string& _input) -> std::vector<unsigned char>;
 };
 
 /**
- * TODO
+ * TODO(parrot)
  */
-struct UnknownCharacterException : public std::exception {
-        const char c;
-        UnknownCharacterException(const char _c) : c{_c} {};
-        auto what() const noexcept -> const char*;
+class UnknownCharacterException : public std::exception {
+	const std::string msg;
+	public:
+        explicit UnknownCharacterException(char character);
+        const char* what() const noexcept override; //NOLINT
 };
 
 /**
- * TODO
+ * TODO(parrot)
  */
-struct NonPrintableCharacterException : public std::exception {
-        const char c;
-        NonPrintableCharacterException(const char _c) : c{_c} {};
-        auto what() const noexcept -> const char*;
+class NonPrintableCharacterException : public std::exception {
+	const std::string msg;
+	public:
+        explicit NonPrintableCharacterException(char character);
+        const char* what() const noexcept override; //NOLINT
 };
 
 /**
- * TODO
+ * TODO(parrot)
  */
-struct DuplicateCharacterException : public std::exception {
-        const char c;
-        DuplicateCharacterException(const char _c) : c{_c} {};
-        auto what() const noexcept -> const char*;
+class DuplicateCharacterException : public std::exception {
+	const std::string msg;
+	public:
+        explicit DuplicateCharacterException(char character);
+        const char* what() const noexcept override; //NOLINT
 };
 }

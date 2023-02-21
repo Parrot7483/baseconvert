@@ -5,6 +5,8 @@ enable_testing()
 
 # require C++20
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+add_compile_options(-Wall -Wextra -Wpedantic -Werror)
 
 # Set names
 set(EXECUTABLE_NAME base-convert)
@@ -18,6 +20,15 @@ find_package(doctest REQUIRED)
 # find FMT formatting library
 find_library(GMP_LIBXX gmpxx)
 find_library(FMT fmt)
+
+# enabale clang-tidy
+set(CMAKE_CXX_CLANG_TIDY
+  clang-tidy;
+  -checks='bugprone-*,cert-*,clang-analyzer-*,cppcoreguidelines-*,darwin-*,hicpp-*,misc-*,modernize-*,performance-*,portability-*,readability-*';
+  -header-filter=.*;
+  -use-color;
+  -extra-arg=-std=c++20;
+  -p='build';)
 
 # Create library
 add_library(${LIBRARY_NAME} SHARED BaseConvert.cpp BaseConvert.h)
