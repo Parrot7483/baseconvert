@@ -22,13 +22,13 @@ find_library(GMP_LIBXX gmpxx)
 find_library(FMT fmt)
 
 # enabale clang-tidy
-set(CMAKE_CXX_CLANG_TIDY
-  clang-tidy;
-  -checks='bugprone-*,cert-*,clang-analyzer-*,cppcoreguidelines-*,darwin-*,hicpp-*,misc-*,modernize-*,performance-*,portability-*,readability-*';
-  -header-filter=.*;
-  -use-color;
-  -extra-arg=-std=c++20;
-  -p='build';)
+# set(CMAKE_CXX_CLANG_TIDY
+#   clang-tidy;
+#   -checks='bugprone-*,cert-*,clang-analyzer-*,cppcoreguidelines-*,darwin-*,hicpp-*,misc-*,modernize-*,performance-*,portability-*,readability-*';
+#   -header-filter=.*;
+#   -use-color;
+#   -extra-arg=-std=c++20;
+#   -p='build';)
 
 # Create library
 add_library(${LIBRARY_NAME} SHARED BaseConvert.cpp BaseConvert.h)

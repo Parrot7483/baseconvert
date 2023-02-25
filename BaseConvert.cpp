@@ -10,8 +10,6 @@
 #include <unordered_map>
 #include <vector>
 
-// TODO(Parrot): Return this-> (not recommendet in general)
-
 namespace baseconvert {
     auto generate_standard_alphabets() -> std::tuple<alphabet, alphabet> {
         alphabet alpha {};
@@ -46,13 +44,27 @@ namespace baseconvert {
         return {alpha, alpha_reverse};
     }
 
+    /*
+     * In place Euclidean division (division with remainder) of the dividend by the divisor. 
+     * Remainder is returned.
+     */
+    auto mpz_tdiv_qr_ui(mpz_class& dividend, const mpz_class& divisor) {
+        mpz_class remainder;
+        mpz_tdiv_qr(dividend.get_mpz_t(), 
+                    remainder.get_mpz_t(), 
+                    dividend.get_mpz_t(), 
+        	    divisor.get_mpz_t());
+        return remainder.get_ui();
+    }
+
     // TODO(Parrot): Use template for input and output data type
     // TODO(Parrot): Make use of string_view
+    template <typename OutputContainer>
     auto convert(
         alphabet& _input_alpha, 
         alphabet& _output_alpha_reverse,
-        const std::vector<unsigned char>& _input
-    ) -> std::vector<unsigned char> {
+        const auto& _input
+    ) -> OutputContainer {
         mpz_class num {0}; 
         const auto input_alpha_size {_input_alpha.size()}; 
         for (const auto c: _input){
@@ -66,16 +78,10 @@ namespace baseconvert {
         }
 
 	// TOOD: Size of output is known. Create Buffer. Fill from end to front. No reverse needed!
-        std::vector<unsigned char> result {};
+        OutputContainer result {};
         const mpz_class output_alpha_size {_output_alpha_reverse.size()};
         while (num) {
-	    // TODO(Parrot): Create wrapper around mpz_tdiv_qr that returns remainder.get_ui() and only takes num once. Uses int as input and output.
-            mpz_class remainder;
-            mpz_tdiv_qr(num.get_mpz_t(), 
-                        remainder.get_mpz_t(), 
-                        num.get_mpz_t(), 
-                        output_alpha_size.get_mpz_t());
-            result.push_back(_output_alpha_reverse[remainder.get_ui()]);
+            result.push_back(_output_alpha_reverse[mpz_tdiv_qr_ui(num, output_alpha_size)]);
         }
 
         std::reverse(result.begin(), result.end());
@@ -83,23 +89,21 @@ namespace baseconvert {
     }
 
     BaseConvert::BaseConvert(const std::string& _origin_alpha, const std::string& _target_alpha) {
-        std::tie(this->origin_alpha, this->origin_alpha_reverse) = generate_alphabets(_origin_alpha);
-        std::tie(this->target_alpha, this->target_alpha_reverse) = generate_alphabets(_target_alpha);
+        std::tie(origin_alpha, origin_alpha_reverse) = generate_alphabets(_origin_alpha);
+        std::tie(target_alpha, target_alpha_reverse) = generate_alphabets(_target_alpha);
     }
 
     BaseConvert::BaseConvert(const std::string& _target_alpha) {
-        std::tie(this->origin_alpha, this->origin_alpha_reverse) = generate_standard_alphabets();
-        std::tie(this->target_alpha, this->target_alpha_reverse) = generate_alphabets(_target_alpha);
+        std::tie(origin_alpha, origin_alpha_reverse) = generate_standard_alphabets();
+        std::tie(target_alpha, target_alpha_reverse) = generate_alphabets(_target_alpha);
     }
 
     auto BaseConvert::encode(const std::vector<unsigned char>& _input) -> std::string {
-        std::vector<unsigned char> result = convert(this->origin_alpha, this->target_alpha_reverse, _input);
-        return {result.begin(), result.end()};
+        return convert<std::string>(origin_alpha, target_alpha_reverse, _input);
     }
 
     auto BaseConvert::decode(const std::string& _input) -> std::vector<unsigned char> {
-        std::vector<unsigned char> input{_input.begin(), _input.end()};
-        return convert(this->target_alpha, this->origin_alpha_reverse, input);
+        return convert<std::vector<unsigned char>>(target_alpha, origin_alpha_reverse, _input);
     }
 
     // TODO(Parrot): Replace with C++20 std::format when available in gcc
