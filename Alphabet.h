@@ -1,4 +1,5 @@
 #pragma once
+#include <fmt/core.h>
 #include <initializer_list>
 #include <string>
 #include <unordered_map>
@@ -6,6 +7,48 @@
 #include <vector>
 
 namespace baseconvert {
+
+/**
+ * TODO(parrot)
+ */
+class UnknownCharacterException : public std::exception {
+	const std::string msg;
+public:
+	explicit UnknownCharacterException(const char character) : msg{
+		fmt::format("Found character \'0x{:02X}\' in input but not in input alphabet!", character)
+    } {};
+	const char* what() const noexcept override { //NOLINT
+		return msg.c_str();
+	}
+};
+
+/**
+ * TODO(parrot)
+ */
+class NonPrintableCharacterException : public std::exception {
+	const std::string msg;
+public:
+	explicit NonPrintableCharacterException(const char character) : msg{
+		fmt::format("Character \'0x{:02X}\' found in alphabet is not printable!", character)
+    } {};
+    const char* what() const noexcept override { //NOLINT
+		return msg.c_str();
+	}
+};
+
+/**
+ * TODO(parrot)
+ */
+class DuplicateCharacterException : public std::exception {
+	const std::string msg;
+public:
+    DuplicateCharacterException(const char character) : msg{
+		fmt::format("Character \'0x{:02X}\' found multiple times in alphabet!", character)
+    } {};
+    const char* what() const noexcept override { //NOLINT
+		return msg.c_str();
+	}
+};
 
 template <typename T, typename S>
 class Alphabet {
@@ -15,14 +58,14 @@ public:
 	virtual auto size() const -> int = 0;
 };
 
-class DefaultAlphabet: public Alphabet<std::byte, unsigned char> {
+class DefaultAlphabet: public Alphabet<unsigned char, unsigned char> {
 public:
-	auto forward(const std::byte character) const -> unsigned char override {
+	auto forward(const unsigned char character) const -> unsigned char override {
 		return static_cast<unsigned char>(character);
 	}
 
-	auto reverse(const unsigned char character) const -> std::byte override {
-		return static_cast<std::byte>(character);
+	auto reverse(const unsigned char character) const -> unsigned char override {
+		return static_cast<unsigned char>(character);
 	}
 
 	auto size() const -> int {
@@ -36,11 +79,20 @@ class CustomAlphabet: public Alphabet<T, unsigned char> {
 	const std::unordered_map<T, unsigned char> _forward;
 	const std::unordered_map<unsigned char, T> _reverse;
 
+	// TODO: Simplify this code reuse
 	template <typename InputIterator>
 	static auto transform1(InputIterator begin, InputIterator end) {
 		std::unordered_map<T, unsigned char> result {};
 
 		for (auto i = 0; begin != end; begin++) {
+            if (0 == isprint(*begin)) {
+                throw NonPrintableCharacterException(*begin);
+			} 
+
+			if (result.contains(*begin)) {
+                throw DuplicateCharacterException(*begin);
+			}
+
 			result[*begin] = i++;
 		}
 
@@ -52,6 +104,14 @@ class CustomAlphabet: public Alphabet<T, unsigned char> {
 		std::unordered_map<unsigned char, T> result {};
 
 		for (auto i = 0; begin != end; begin++) {
+            if (0 == isprint(*begin)) {
+                throw NonPrintableCharacterException(*begin);
+			} 
+
+			if (result.contains(*begin)) {
+                throw DuplicateCharacterException(*begin);
+			}
+
 			result[i++] = *begin;
 		}
 
@@ -73,11 +133,19 @@ public:
 	// CustomAlphabet(const std::initializer_list<std::pair<T, unsigned char>> init);
 
 	auto forward(const T character) const -> unsigned char override {
-    	return _forward.at(character);
+        try {
+			return _forward.at(character);
+        } catch(const std::out_of_range&) {
+            throw UnknownCharacterException(static_cast<char>(character));
+        }
 	}
 
 	auto reverse(const unsigned char character) const -> T override {
-    	return _reverse.at(character);
+        try {
+			return _reverse.at(character);
+        } catch(const std::out_of_range&) {
+            throw UnknownCharacterException(static_cast<char>(character));
+        }
 	}
 
 	auto size() const -> int {
@@ -86,5 +154,6 @@ public:
 };
 
 //TODO(Parrot): Do template deduction guide so CustomeAlphabet(const std::string) can be used without explicit template parameter
+
 
 } // Namespace baseconvert
