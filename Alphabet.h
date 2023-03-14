@@ -11,12 +11,9 @@ namespace baseconvert {
 /**
  * TODO(parrot)
  */
-class UnknownCharacterException : public std::exception {
+struct AlphabetException : public std::exception {
 	const std::string msg;
-public:
-	explicit UnknownCharacterException(const char character) : msg{
-		fmt::format("Found character \'0x{:02X}\' in input but not in input alphabet!", character)
-    } {};
+	AlphabetException(const std::string msg) : msg{msg} {};
 	const char* what() const noexcept override { //NOLINT
 		return msg.c_str();
 	}
@@ -25,29 +22,28 @@ public:
 /**
  * TODO(parrot)
  */
-class NonPrintableCharacterException : public std::exception {
-	const std::string msg;
-public:
-	explicit NonPrintableCharacterException(const char character) : msg{
-		fmt::format("Character \'0x{:02X}\' found in alphabet is not printable!", character)
-    } {};
-    const char* what() const noexcept override { //NOLINT
-		return msg.c_str();
-	}
+struct UnknownCharacterException : public AlphabetException {
+	explicit UnknownCharacterException(const char character) : AlphabetException(
+		fmt::format("Found character \'0x{:02X}\' in input but not in input alphabet!", character)
+	){};
 };
 
 /**
  * TODO(parrot)
  */
-class DuplicateCharacterException : public std::exception {
-	const std::string msg;
-public:
-    DuplicateCharacterException(const char character) : msg{
+struct NonPrintableCharacterException : public AlphabetException {
+	explicit NonPrintableCharacterException(const char character) : AlphabetException(
+		fmt::format("Character \'0x{:02X}\' found in alphabet is not printable!", character)
+	){};
+};
+
+/**
+ * TODO(parrot)
+ */
+struct DuplicateCharacterException : public AlphabetException {
+    explicit DuplicateCharacterException(const char character) : AlphabetException(
 		fmt::format("Character \'0x{:02X}\' found multiple times in alphabet!", character)
-    } {};
-    const char* what() const noexcept override { //NOLINT
-		return msg.c_str();
-	}
+	) {};
 };
 
 template <typename T, typename S>
@@ -154,6 +150,4 @@ public:
 };
 
 //TODO(Parrot): Do template deduction guide so CustomeAlphabet(const std::string) can be used without explicit template parameter
-
-
 } // Namespace baseconvert
