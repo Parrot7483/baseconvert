@@ -3,6 +3,27 @@
 
 #include <doctest/doctest.h>
 #include "BaseConvert.h"
+#include "Alphabet.h"
+
+TEST_CASE("Alphabet") {
+	SUBCASE("Default") {
+		baseconvert::DefaultAlphabet alpha1 {};
+		CHECK(1 == alpha1.forward(std::byte{1}));
+		CHECK(std::byte{1} == alpha1.reverse(1));
+
+
+		baseconvert::CustomAlphabet<char> alpha2 {"abcd"};
+		CHECK(0 == alpha2.forward('a'));
+		CHECK(1 == alpha2.forward('b'));
+		CHECK('c' == alpha2.reverse(2));
+		CHECK('d' == alpha2.reverse(3));
+
+		baseconvert::CustomAlphabet<char> alpha3 {'A', 'B'};
+		CHECK(0 == alpha3.forward('A'));
+		CHECK(1 == alpha3.forward('B'));
+		CHECK('B' == alpha3.reverse(1));
+	}
+}
 
 TEST_CASE("Testing the baseconvert library") {
     SUBCASE("Decimal to hex"){
