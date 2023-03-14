@@ -88,6 +88,36 @@ namespace baseconvert {
         return result;
     }
 
+    // TODO(Parrot): Use template for input and output data type
+    // TODO(Parrot): Make use of string_view
+    template <typename OutputContainer, typename AlphaFrom, typename AlphaTo>
+    auto convert2(
+		const AlphaFrom& _from_forward,
+		const AlphaTo& _to_reverse,
+        const auto& _input
+    ) -> OutputContainer {
+        mpz_class num {0}; 
+        for (const auto c: _input){
+			num *= _from_forward.size();
+			// TODO(Parrot): Create own alphabet container that throws at std::out_of_range
+            try {
+                num += _from_forward.forward(c);
+            } catch(const std::out_of_range&) {
+                throw UnknownCharacterException(static_cast<char>(c));
+            }
+        }
+
+		// TOOD: Size of output is known. Create Buffer. Fill from end to front. No reverse needed!
+        OutputContainer result {};
+        const mpz_class output_alpha_size {_to_reverse.size()};
+        while (num) {
+            result.push_back(_to_reverse.reverse(mpz_tdiv_qr_ui(num, output_alpha_size)));
+        }
+
+        std::reverse(result.begin(), result.end());
+        return result;
+    }
+
     BaseConvert::BaseConvert(const std::string& _origin_alpha, const std::string& _target_alpha) {
         std::tie(origin_alpha, origin_alpha_reverse) = generate_alphabets(_origin_alpha);
         std::tie(target_alpha, target_alpha_reverse) = generate_alphabets(_target_alpha);
@@ -105,6 +135,24 @@ namespace baseconvert {
     auto BaseConvert::decode(const std::string& _input) -> std::vector<unsigned char> {
         return convert<std::vector<unsigned char>>(target_alpha, origin_alpha_reverse, _input);
     }
+
+	auto encode(const std::vector<std::byte>& _input, const Alphabet<char, unsigned char>& _target) -> std::string {
+		const DefaultAlphabet alpha{};
+		return convert2<std::string>(alpha, _target, _input);
+
+	}
+
+	// auto encode(const std::vector<unsigned char>& _input, const Alphabet& _origin, const Alphabet& _target) -> std::string {
+
+	// }
+
+	// auto decode(const std::string& _input, const Alphabet& _origin) -> std::vector<unsigned char> {
+
+	// }
+
+	// auto decode(const std::string& _input, const Alphabet& _origin, const Alphabet& _target) -> std::vector<unsigned char> {
+
+	// }
 
     // TODO(Parrot): Replace with C++20 std::format when available in gcc
     UnknownCharacterException::UnknownCharacterException(const char character) : msg{

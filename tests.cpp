@@ -25,6 +25,15 @@ TEST_CASE("Alphabet") {
 	}
 }
 
+TEST_CASE("Testing new concept") {
+    SUBCASE("Raw to hex"){
+		baseconvert::CustomAlphabet<char> alpha {"0123456789ABCDEF"};
+        std::vector<std::byte> input {std::byte{0x5B}, std::byte{0x7C}, std::byte{0xDE}, std::byte{0x3F}, std::byte{0xA4}};
+        std::string result = baseconvert::encode(input, alpha);
+        CHECK(result == "5B7CDE3FA4");
+    }
+}
+
 TEST_CASE("Testing the baseconvert library") {
     SUBCASE("Decimal to hex"){
         baseconvert::BaseConvert t = baseconvert::BaseConvert("0123456789", "0123456789ABCDEF");

@@ -1,7 +1,9 @@
+#pragma once
 #include <unordered_map>
 #include <vector>
 #include <string>
 
+#include "Alphabet.h"
 
 // TODO(parrot)(Parrot): Add option for leading zeros
 // Add support for constexpr
@@ -38,6 +40,11 @@ class BaseConvert {
          */
         auto decode(const std::string& _input) -> std::vector<unsigned char>;
 };
+
+auto encode(const std::vector<std::byte>& _input, const Alphabet<char, unsigned char>& _target) -> std::string;
+// auto encode(const std::vector<unsigned char>& _input, const Alphabet& _origin, const Alphabet& _target) -> std::string;
+// auto decode(const std::string& _input, const Alphabet& _origin) -> std::vector<unsigned char>;
+// auto decode(const std::string& _input, const Alphabet& _origin, const Alphabet& _target) -> std::vector<unsigned char>;
 
 /**
  * TODO(parrot)
