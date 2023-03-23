@@ -6,45 +6,9 @@
 #include <tuple>
 #include <vector>
 
+#include "Exceptions.h"
+
 namespace baseconvert {
-
-/**
- * TODO(parrot)
- */
-struct AlphabetException : public std::exception {
-	const std::string msg;
-	AlphabetException(const std::string msg) : msg{msg} {};
-	const char* what() const noexcept override { //NOLINT
-		return msg.c_str();
-	}
-};
-
-/**
- * TODO(parrot)
- */
-struct UnknownCharacterException : public AlphabetException {
-	explicit UnknownCharacterException(const char character) : AlphabetException(
-		fmt::format("Found character \'0x{:02X}\' in input but not in input alphabet!", character)
-	){};
-};
-
-/**
- * TODO(parrot)
- */
-struct NonPrintableCharacterException : public AlphabetException {
-	explicit NonPrintableCharacterException(const char character) : AlphabetException(
-		fmt::format("Character \'0x{:02X}\' found in alphabet is not printable!", character)
-	){};
-};
-
-/**
- * TODO(parrot)
- */
-struct DuplicateCharacterException : public AlphabetException {
-    explicit DuplicateCharacterException(const char character) : AlphabetException(
-		fmt::format("Character \'0x{:02X}\' found multiple times in alphabet!", character)
-	) {};
-};
 
 template <typename T, typename S>
 class Alphabet {
@@ -113,6 +77,7 @@ class CustomAlphabet: public Alphabet<T, unsigned char> {
 
 		return result;
 	}
+
 public:
 	CustomAlphabet(const std::string& init)
 	: Alphabet<T, unsigned char>{}
@@ -129,15 +94,15 @@ public:
 	// CustomAlphabet(const std::initializer_list<std::pair<T, unsigned char>> init);
 
 	auto forward(const T character) const -> unsigned char override {
-        try {
+		try {
 			return _forward.at(character);
-        } catch(const std::out_of_range&) {
-            throw UnknownCharacterException(static_cast<char>(character));
-        }
+		} catch(const std::out_of_range&) {
+			throw UnknownCharacterException(static_cast<char>(character));
+		}
 	}
 
 	auto reverse(const unsigned char character) const -> T override {
-        try {
+		try {
 			return _reverse.at(character);
         } catch(const std::out_of_range&) {
             throw UnknownCharacterException(static_cast<char>(character));

@@ -31,7 +31,7 @@ find_library(FMT fmt)
 #   -p='build';)
 
 # Create library
-add_library(${LIBRARY_NAME} SHARED BaseConvert.h BaseConvert.cpp Alphabet.h)
+add_library(${LIBRARY_NAME} SHARED BaseConvert.h BaseConvert.cpp Alphabet.h Exceptions.h)
 target_link_libraries(${LIBRARY_NAME} ${GMP_LIBXX} ${FMT})
 
 # Create Test
