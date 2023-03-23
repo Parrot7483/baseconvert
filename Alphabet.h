@@ -78,8 +78,6 @@ class CustomAlphabet: public Alphabet<T, unsigned char> {
 		return result;
 	}
 
-
-
 public:
 	CustomAlphabet(const char* init) 
 	: CustomAlphabet(std::string(init))
@@ -97,7 +95,7 @@ public:
 	, _reverse{ transform2(init.begin(), init.end()) }
 	{}
 
-	// CustomAlphabet(const std::initializer_list<std::pair<T, unsigned char>> init);
+	// CustomAlphabet(std::initializer_list<std::pair<T, unsigned char>> init);
 
 	auto forward(const T character) const -> unsigned char override {
 		try {

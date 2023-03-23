@@ -47,7 +47,7 @@ namespace baseconvert {
 		const std::vector<unsigned char>& _input, 
 		const Alphabet<unsigned char, unsigned char>& _target
 	) -> std::string {
-		return convert<std::string>(DefaultAlphabet(), _target, _input);
+		return encode(_input, DefaultAlphabet(), _target);
 	}
 
 	auto encode(
@@ -62,7 +62,7 @@ namespace baseconvert {
 		const std::string& _input, 
 		const Alphabet<unsigned char, unsigned char>& _origin
 	) -> std::vector<unsigned char> {
-		return convert<std::vector<unsigned char>>(_origin, DefaultAlphabet(), _input);
+		return decode(_input, DefaultAlphabet(), _origin);
 	}
 
 	auto decode(
