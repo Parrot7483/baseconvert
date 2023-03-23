@@ -19,18 +19,40 @@ TEST_CASE("Alphabet") {
 		baseconvert::DefaultAlphabet alpha1 {};
 		CHECK(1 == alpha1.forward(1));
 		CHECK(1 == alpha1.reverse(1));
+	}
 
+	SUBCASE("Custome") {
+		// Use const char* template deduction guide
+		baseconvert::CustomAlphabet alpha1("abc");
+		CHECK(0 == alpha1.forward('a'));
+		CHECK('b' == alpha1.reverse(1));
 
-		baseconvert::CustomAlphabet<char> alpha2 {"abcd"};
-		CHECK(0 == alpha2.forward('a'));
-		CHECK(1 == alpha2.forward('b'));
-		CHECK('c' == alpha2.reverse(2));
-		CHECK('d' == alpha2.reverse(3));
+		// Use const char* template deduction guide
+		baseconvert::CustomAlphabet alpha2 = "efg";
+		CHECK(0 == alpha2.forward('e'));
+		CHECK('g' == alpha2.reverse(2));
 
-		baseconvert::CustomAlphabet<char> alpha3 {'A', 'B'};
-		CHECK(0 == alpha3.forward('A'));
-		CHECK(1 == alpha3.forward('B'));
-		CHECK('B' == alpha3.reverse(1));
+		// Use const std::string& template deduction guide
+		std::string s1 = "hij";
+		baseconvert::CustomAlphabet alpha3(s1);
+		CHECK(0 == alpha3.forward('h'));
+		CHECK('j' == alpha3.reverse(2));
+
+		// Use const std::string& template deduction guide
+		std::string s2 = "xyz";
+		baseconvert::CustomAlphabet alpha4 = s2;
+		CHECK(0 == alpha4.forward('x'));
+		CHECK('z' == alpha4.reverse(2));
+
+		// Use std::initializer_list<T> template deduction guide
+		baseconvert::CustomAlphabet alpha5 {'A', 'B'};
+		CHECK(0 == alpha5.forward('A'));
+		CHECK('B' == alpha5.reverse(1));
+
+		// Use std::initializer_list<T> template deduction guide
+		baseconvert::CustomAlphabet alpha6 = {'X', 'Z'};
+		CHECK(0 == alpha6.forward('X'));
+		CHECK('Z' == alpha6.reverse(1));
 	}
 }
 

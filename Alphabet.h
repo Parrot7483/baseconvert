@@ -21,11 +21,11 @@ public:
 class DefaultAlphabet: public Alphabet<unsigned char, unsigned char> {
 public:
 	auto forward(const unsigned char character) const -> unsigned char override {
-		return static_cast<unsigned char>(character);
+		return character;
 	}
 
 	auto reverse(const unsigned char character) const -> unsigned char override {
-		return static_cast<unsigned char>(character);
+		return character;
 	}
 
 	auto size() const -> int {
@@ -78,7 +78,13 @@ class CustomAlphabet: public Alphabet<T, unsigned char> {
 		return result;
 	}
 
+
+
 public:
+	CustomAlphabet(const char* init) 
+	: CustomAlphabet(std::string(init))
+	{}
+
 	CustomAlphabet(const std::string& init)
 	: Alphabet<T, unsigned char>{}
 	, _forward{ transform1(init.begin(), init.end()) }
@@ -114,5 +120,11 @@ public:
 	}
 };
 
-//TODO(Parrot): Do template deduction guide so CustomeAlphabet(const std::string) can be used without explicit template parameter
+CustomAlphabet(const char*) -> CustomAlphabet<char>;
+
+CustomAlphabet(const std::string&) -> CustomAlphabet<char>;
+
+template <typename T>
+CustomAlphabet(std::initializer_list<T>) -> CustomAlphabet<T>;
+
 } // Namespace baseconvert
