@@ -14,12 +14,15 @@ set(TEST_NAME tests)
 # find Doctest testing package
 find_package(doctest REQUIRED)
 
+# find new range-v3 c++ ranges package
+find_package(range-v3 REQUIRED)
+
 # find GNU Multiple Precision Arithmetic Library
-# find FMT formatting library
 find_library(GMP_LIBXX gmpxx)
 find_library(GMP_LIB gmp)
+
+# find FMT formatting library
 find_library(FMT fmt)
-find_package(range-v3)
 
 # enabale clang-tidy
 # set(CMAKE_CXX_CLANG_TIDY
@@ -32,9 +35,9 @@ find_package(range-v3)
 
 # Create library
 add_library(${LIBRARY_NAME} INTERFACE 
-	src/BaseConvert.h 
-	src/Alphabet.h 
 	src/Exceptions.h
+	src/Alphabet.h 
+	src/BaseConvert.h 
 )
 target_link_libraries(${LIBRARY_NAME} INTERFACE ${FMT} ${GMP_LIBXX} ${GMP_LIB})
 
