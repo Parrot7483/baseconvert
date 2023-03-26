@@ -6,6 +6,7 @@
                           pkgs.cmake 
                           pkgs.gmp 
                           pkgs.fmt 
+                          pkgs.range-v3
                           pkgs.doctest 
                           pkgs.bash ];
 }

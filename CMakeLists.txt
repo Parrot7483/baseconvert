@@ -20,6 +20,7 @@ find_package(doctest REQUIRED)
 # find FMT formatting library
 find_library(GMP_LIBXX gmpxx)
 find_library(FMT fmt)
+find_package(range-v3)
 
 # enabale clang-tidy
 # set(CMAKE_CXX_CLANG_TIDY
@@ -31,14 +32,23 @@ find_library(FMT fmt)
 #   -p='build';)
 
 # Create library
-add_library(${LIBRARY_NAME} SHARED BaseConvert.h BaseConvert.cpp Alphabet.h Exceptions.h)
+add_library(${LIBRARY_NAME} SHARED 
+	src/BaseConvert.h 
+	src/BaseConvert.cpp 
+	src/Alphabet.h 
+	src/Exceptions.h
+)
 target_link_libraries(${LIBRARY_NAME} ${GMP_LIBXX} ${FMT})
 
 # Create Test
-add_executable(${TEST_NAME} tests.cpp)
+add_executable(${TEST_NAME} 
+	src/tests.cpp
+)
 target_link_libraries(${TEST_NAME} PRIVATE ${LIBRARY_NAME} doctest::doctest)
 add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
 
 # Create command line utility
-add_executable(${EXECUTABLE_NAME} main.cpp)
-target_link_libraries(${EXECUTABLE_NAME} PUBLIC ${LIBRARY_NAME})
+add_executable(${EXECUTABLE_NAME} 
+	src/main.cpp
+)
+target_link_libraries(${EXECUTABLE_NAME} PUBLIC ${LIBRARY_NAME} range-v3)
