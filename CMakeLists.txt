@@ -36,8 +36,9 @@ find_library(FMT fmt)
 # Create library
 add_library(${LIBRARY_NAME} INTERFACE 
 	src/Exceptions.h
+	src/Util.h
 	src/Alphabet.h 
-	src/BaseConvert.h 
+	src/Convert.h 
 )
 target_link_libraries(${LIBRARY_NAME} INTERFACE ${FMT} ${GMP_LIBXX} ${GMP_LIB})
 

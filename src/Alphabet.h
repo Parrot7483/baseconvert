@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "Exceptions.h"
+#include "Util.h"
 
 namespace baseconvert {
 
@@ -28,7 +29,7 @@ public:
 		return character;
 	}
 
-	auto size() const -> int {
+	auto size() const -> int override {
 		return 256;
 	}
 };
@@ -113,7 +114,7 @@ public:
         }
 	}
 
-	auto size() const -> int {
+	auto size() const -> int override {
 		return _forward.size();
 	}
 };
@@ -125,4 +126,4 @@ CustomAlphabet(const std::string&) -> CustomAlphabet<char>;
 template <typename T>
 CustomAlphabet(std::initializer_list<T>) -> CustomAlphabet<T>;
 
-} // Namespace baseconvert
+} // namespace baseconvert

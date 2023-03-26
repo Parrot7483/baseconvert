@@ -3,7 +3,7 @@
 
 #include <doctest/doctest.h>
 #include "Alphabet.h"
-#include "BaseConvert.h"
+#include "Convert.h"
 
 // auto make_buffer(const std::vector<int> input) -> std::vector<std::byte> {
 // 	std::vector<std::byte> result {};
